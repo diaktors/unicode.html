@@ -2,28 +2,41 @@
 <head>
 <meta charset="utf-8" />
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="unicode.js"></script>
 <script type="text/javascript">
 $(function () {
   var perform_filtering = function(re) {
-    $.getJSON('unicode.js', function(data) {
-      var div = $('#chars').empty()
-      $(data).filter(function() {
-        return this.n.match(re);
-        }).each(function(i, v) {
-        div.append(
-          $('<div>')
-          .text(v.c)
-          .attr('title', '['+v.cat+'] '+v.n)
-        );
-        if(i>256) return false;
-      });
+    var regexps = re.split(/\s+/).map(function(i) {
+      return new RegExp(i, 'i');
+    });
+    var div = $('#chars').empty();
+    $(unicode).filter(function() {
+      for (var i = 0; i < regexps.length; i++)
+        if (!(this.n.match(regexps[i]) || this.c.match(regexps[i]) || this.cpt.toString(16).match(regexps[i])))
+          return false;
+      return true;
+      }).each(function(i, v) {
+      div.append(
+        $('<div>')
+        .text(v.c)
+        .attr('title', '['+v.cat+'] '+v.n)
+        .dblclick(function() {
+          document.location = 'http://www.fileformat.info/info/unicode/char/' + v.cpt.toString(16);
+        })
+      );
+      if(i > 1024) return false;
     });
   }
   $('#filter').keypress(function(e) {
-    var re = new RegExp($('#filter').val(), 'i');
-    perform_filtering(re);
+  if ((e.keyCode ? e.keyCode : e.which) == 13) {
+      location.hash = $('#filter').val();
+      perform_filtering($('#filter').val());
+  }
   });
-  $('#filter').trigger('keypress')
+  var initialQuery = location.hash ? location.hash.substr(1) : '';
+  $('#filter').val(initialQuery);
+  perform_filtering(initialQuery);
+  $('#filter').focus();
 });
 </script>
 <style type="text/css">
