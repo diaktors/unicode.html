@@ -4,26 +4,23 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
 <script type="text/javascript">
 $(function () {
-  var perform_filtering = function(re) {
-    $.getJSON('unicode.js', function(data) {
+  var perform_filtering = function() {
+  $.getJSON('unicode2json.py/', {'pattern': $('#filter').val()}, function(data) {
       var div = $('#chars').empty()
-      $(data).filter(function() {
-        return this.n.match(re);
-        }).each(function(i, v) {
+      $.each(data, function(i, v) {
         div.append(
           $('<div>')
-          .text(v.c)
-          .attr('title', '['+v.cat+'] '+v.n)
+          .text(String.fromCharCode(v.cpti))
+          .attr('title', '['+v.cpt+', '+v.cat+'] '+v.n)
         );
-        if(i>256) return false;
       });
     });
   }
   $('#filter').keypress(function(e) {
-    var re = new RegExp($('#filter').val(), 'i');
-    perform_filtering(re);
+    if ((e.keyCode ? e.keyCode : e.which) == 13)
+      perform_filtering();
   });
-  $('#filter').trigger('keypress')
+  perform_filtering();
 });
 </script>
 <style type="text/css">
