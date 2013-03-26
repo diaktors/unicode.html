@@ -1,22 +1,31 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.min.js"></script>
     <script src="unicode.js"></script>
     <script>
-      function UnicodeCtrl($scope) {
-        $scope.filter = location.hash ? location.hash.substr(1) : 'greek';
-        $scope.regexps = $scope.filter.split(/\s+/).map(function (i) {
-          return new RegExp(i, 'i');
-        });
-        $scope.chars = unicode.filter(function (c) {
-          for (var i = 0; i < $scope.regexps.length; i++) {
-            var re = $scope.regexps[i];
-            if (!(c.n.match(re) || c.c.match(re) || c.cpt.toString(16).match(re)))
-            return false;
-          }
-          return true;
-        }).slice(0, 1024);
+      function UnicodeCtrl($scope, $location) {
+        $scope.filter = ''; //$location.path().substr(1);
+        $scope.regexps = function () {
+          //$location.path($scope.filter);
+          return $scope.filter.split(/\s+/).map(function (i) {
+            return new RegExp(i, 'i');
+          });
+        }
+        $scope.filteredChars = function () {
+          var regexps = $scope.regexps();
+          return unicode.filter(function (c) {
+            for (var i = 0; i < regexps.length; i++) {
+              var re = regexps[i];
+              if (!(c.n.match(re) || c.c.match(re) || c.cpt.toString(16).match(re)))
+              return false;
+            }
+            return true;
+          }).slice(0, 1024);
+        }
+        $scope.gotoFileFormat = function () {
+          document.location = 'http://www.fileformat.info/info/unicode/char/' + this.c.cpt.toString(16);
+        }
       }
     </script>
     <style type="text/css">
@@ -45,7 +54,7 @@
       <input ng-model="filter" id="filter" placeholder="Filter Criterion"></input>
     </div>
     <div id="chars">
-      <div ng-repeat="c in chars" title="[{{c.cat}}] {{c.n}}">
+      <div ng-repeat="c in filteredChars()" title="[0x{{c.cpt.toString(16)}}] {{c.n}}" ng-dblclick="gotoFileFormat()">
         {{c.c}}
       </div>
     </div>
