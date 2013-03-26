@@ -1,69 +1,53 @@
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="unicode.js"></script>
-<script type="text/javascript">
-$(function () {
-  var perform_filtering = function(re) {
-    var regexps = re.split(/\s+/).map(function(i) {
-      return new RegExp(i, 'i');
-    });
-    var div = $('#chars').empty();
-    $(unicode).filter(function() {
-      for (var i = 0; i < regexps.length; i++)
-        if (!(this.n.match(regexps[i]) || this.c.match(regexps[i]) || this.cpt.toString(16).match(regexps[i])))
-          return false;
-      return true;
-      }).each(function(i, v) {
-      div.append(
-        $('<div>')
-        .text(v.c)
-        .attr('title', '['+v.cat+'] '+v.n)
-        .dblclick(function() {
-          document.location = 'http://www.fileformat.info/info/unicode/char/' + v.cpt.toString(16);
-        })
-      );
-      if(i > 1024) return false;
-    });
-  }
-  $('#filter').keypress(function(e) {
-  if ((e.keyCode ? e.keyCode : e.which) == 13) {
-      location.hash = $('#filter').val();
-      perform_filtering($('#filter').val());
-  }
-  });
-  var initialQuery = location.hash ? location.hash.substr(1) : '';
-  $('#filter').val(initialQuery);
-  perform_filtering(initialQuery);
-  $('#filter').focus();
-});
-</script>
-<style type="text/css">
-  body {
-    font-family: "DejaVu Sans";
-  }
-  #filter {
-    font-size: 40px;
-    width: 100%;
-  }
-  #chars > div {
-    width: 60px;
-    height: 60px;
-    font-size: 40px;
-    float: left;
-    border: 1px dotted #ccc;
-    text-align: center;
-    margin: 3px;
-    color: #333;
-  }
-</style>
-<title>Unicode Characters</title>
-</head>
-<body>
-
-  <div><input id="filter" placeholder="Filter Criterion"></input></div>
-  <div id="chars"></div>
-
-</body>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+    <script src="unicode.js"></script>
+    <script>
+      function UnicodeCtrl($scope) {
+        $scope.filter = location.hash ? location.hash.substr(1) : 'greek';
+        $scope.regexps = $scope.filter.split(/\s+/).map(function (i) {
+          return new RegExp(i, 'i');
+        });
+        $scope.chars = unicode.filter(function (c) {
+          for (var i = 0; i < $scope.regexps.length; i++) {
+            var re = $scope.regexps[i];
+            if (!(c.n.match(re) || c.c.match(re) || c.cpt.toString(16).match(re)))
+            return false;
+          }
+          return true;
+        }).slice(0, 1024);
+      }
+    </script>
+    <style type="text/css">
+      body {
+        font-family: "DejaVu Sans";
+      }
+      #filter {
+        font-size: 40px;
+        width: 100%;
+      }
+      #chars > div {
+        width: 60px;
+        height: 60px;
+        font-size: 40px;
+        float: left;
+        border: 1px dotted #ccc;
+        text-align: center;
+        margin: 3px;
+        color: #333;
+      }
+    </style>
+    <title>Unicode Characters</title>
+  </head>
+  <body ng-app ng-controller="UnicodeCtrl">
+    <div>
+      <input ng-model="filter" id="filter" placeholder="Filter Criterion"></input>
+    </div>
+    <div id="chars">
+      <div ng-repeat="c in chars" title="[{{c.cat}}] {{c.n}}">
+        {{c.c}}
+      </div>
+    </div>
+  </body>
 </html>
