@@ -22,7 +22,7 @@
         font-size: 40px;
         width: 100%;
       }
-      #chars > div {
+      .char {
         width: 60px;
         height: 60px;
         font-size: 40px;
@@ -40,7 +40,7 @@
       <input ng-model="filter" id="filter" placeholder="Filter Criterion"></input>
     </div>
     <div id="chars">
-      <div ng-repeat="c in unicode | filter:filter | limitTo:1024" title="[{{c.cptHex}}] {{c.n}}" ng-dblclick="gotoFileFormat()">
+      <div class="char" ng-repeat="c in unicode | filter:filter | limitTo:1024" title="[{{c.cptHex}}] {{c.n}}" ng-dblclick="gotoFileFormat()">
         {{c.c}}
       </div>
     </div>
