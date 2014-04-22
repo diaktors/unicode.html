@@ -1,22 +1,33 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
     <script src="unicode.js"></script>
     <script>
       function UnicodeCtrl($scope, $location) {
         $scope.unicode = unicode.map(function(c) {
-          c.cptHex = '0x' + c.cpt.toString(16);
+          c.cptHex = c.cpt.toString(16);
+          c.cptHex4 = ('0000' + c.cptHex).slice(-4);
           return c;
         });
+        $scope.selectedChar = [$scope.unicode[0]];
+        $scope.selectChar = function () {
+          $scope.selectedChar[0] = this.c;
+        };
         $scope.gotoFileFormat = function () {
           document.location = 'http://www.fileformat.info/info/unicode/char/' + this.c.cpt.toString(16);
-        }
+        };
+        $scope.setFilter = function (x) {
+          $scope.filter = $scope.filterInput;
+        };
       }
     </script>
     <style type="text/css">
       body {
         font-family: "DejaVu Sans";
+      }
+      code {
+        font-family: "DejaVu Sans Mono";
       }
       #filter {
         font-size: 40px;
@@ -32,15 +43,31 @@
         margin: 3px;
         color: #333;
       }
+      .char.selected {
+        background: lightgreen;
+      }
+      .selected-char {
+        border: 1px solid #ccc;
+        margin: 3px;
+        font-size: 30px;
+        padding: 0.5em;
+      }
     </style>
     <title>Unicode Characters</title>
   </head>
-  <body ng-app ng-controller="UnicodeCtrl">
+  <body data-ng-app data-ng-controller="UnicodeCtrl">
     <div>
-      <input ng-model="filter" id="filter" placeholder="Filter Criterion"></input>
+      <input data-ng-model="filterInput" data-ng-keyup="$event.keyCode == 13 ? setFilter() : null" name="filter" id="filter" placeholder="Filter Criterion"></input>
+    </div>
+    <div class="selected-char">
+      <b>{{selectedChar[0].n}} (U+{{selectedChar[0].cpt}})</b>
+      <br>
+      <code>&amp;#{{selectedChar[0].cpt}};</code>
+      <code>&amp;#x{{selectedChar[0].cptHex}};</code>
+      <code>\u{{selectedChar[0].cptHex4}}</code>
     </div>
     <div id="chars">
-      <div class="char" ng-repeat="c in unicode | filter:filter | limitTo:1024" title="[{{c.cptHex}}] {{c.n}}" ng-dblclick="gotoFileFormat()">
+      <div data-ng-class="{char:1, selected:selectedChar[0] == c}" data-ng-repeat="c in unicode | filter:filter | limitTo:1024" title="[0x{{c.cptHex}}] {{c.n}}" data-ng-click="selectChar()" data-ng-dblclick="gotoFileFormat()">
         {{c.c}}
       </div>
     </div>
