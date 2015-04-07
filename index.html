@@ -23,6 +23,30 @@
           $location.replace().search('filter', filter);
         });
       }
+
+      angular.module('Unicode').directive('selectOn', selectOnClick);
+      function selectOnClick () {
+        return {
+          scope: {
+            selectOn: '@'
+          },
+          link: function (scope, elm) {
+            elm.on(scope.selectOn || 'click', onEvent);
+            function onEvent () {
+              if (document.selection) {
+                var range = document.body.createTextRange();
+                range.moveToElementText(elm[0]);
+                range.select();
+              } else if (window.getSelection) {
+                var range = document.createRange();
+                range.selectNode(elm[0]);
+                window.getSelection().addRange(range);
+              }
+            }
+          }
+        };
+      }
+
     </script>
     <style type="text/css">
       body {
@@ -68,9 +92,9 @@
     <div class="selected-char">
       <b>{{selectedChar[0].n}} (U+{{selectedChar[0].cpt}})</b>
       <br>
-      <code>&amp;#{{selectedChar[0].cpt}};</code>
-      <code>&amp;#x{{selectedChar[0].cptHex}};</code>
-      <code>\u{{selectedChar[0].cptHex4}}</code>
+      <code data-select-on="dblclick">&amp;#{{selectedChar[0].cpt}};</code>
+      <code data-select-on="dblclick">&amp;#x{{selectedChar[0].cptHex}};</code>
+      <code data-select-on="dblclick">\u{{selectedChar[0].cptHex4}}</code>
     </div>
     <div id="chars">
       <div data-ng-class="{char:1, selected:selectedChar[0] == c}" data-ng-repeat="c in unicode | filter:filter | limitTo:1024" title="[0x{{c.cptHex}}] {{c.n}}" data-ng-click="selectChar()" data-ng-dblclick="gotoFileFormat()">
