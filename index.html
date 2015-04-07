@@ -1,9 +1,10 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="unicode.js"></script>
     <script>
+      angular.module('Unicode', []).controller('UnicodeCtrl', UnicodeCtrl);
       function UnicodeCtrl($scope, $location) {
         $scope.unicode = unicode.map(function(c) {
           c.cptHex = c.cpt.toString(16);
@@ -55,7 +56,7 @@
     </style>
     <title>Unicode Characters</title>
   </head>
-  <body data-ng-app data-ng-controller="UnicodeCtrl">
+  <body data-ng-app="Unicode" data-ng-controller="UnicodeCtrl">
     <div>
       <input data-ng-model="filterInput" data-ng-keyup="$event.keyCode == 13 ? setFilter() : null" name="filter" id="filter" placeholder="Filter Criterion"></input>
     </div>
