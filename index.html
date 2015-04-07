@@ -6,6 +6,7 @@
     <script>
       angular.module('Unicode', []).controller('UnicodeCtrl', UnicodeCtrl);
       function UnicodeCtrl($scope, $location) {
+        $scope.filter = $location.search().filter;
         $scope.unicode = unicode.map(function(c) {
           c.cptHex = c.cpt.toString(16);
           c.cptHex4 = ('0000' + c.cptHex).slice(-4);
@@ -18,6 +19,9 @@
         $scope.gotoFileFormat = function () {
           document.location = 'http://www.fileformat.info/info/unicode/char/' + this.c.cpt.toString(16);
         };
+        $scope.$watch('filter', function (filter) {
+          $location.replace().search('filter', filter);
+        });
       }
     </script>
     <style type="text/css">
