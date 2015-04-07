@@ -18,9 +18,6 @@
         $scope.gotoFileFormat = function () {
           document.location = 'http://www.fileformat.info/info/unicode/char/' + this.c.cpt.toString(16);
         };
-        $scope.setFilter = function (x) {
-          $scope.filter = $scope.filterInput;
-        };
       }
     </script>
     <style type="text/css">
@@ -58,7 +55,7 @@
   </head>
   <body data-ng-app="Unicode" data-ng-controller="UnicodeCtrl">
     <div>
-      <input data-ng-model="filterInput" data-ng-keyup="$event.keyCode == 13 ? setFilter() : null" name="filter" id="filter" placeholder="Filter Criterion"></input>
+      <input data-ng-model="filter" data-ng-model-options="{debounce: 200}" name="filter" id="filter" placeholder="Filter Criterion"></input>
     </div>
     <div class="selected-char">
       <b>{{selectedChar[0].n}} (U+{{selectedChar[0].cpt}})</b>
