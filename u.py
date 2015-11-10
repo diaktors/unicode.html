@@ -1,4 +1,7 @@
-import unicodedata, json
+import collections
+import json
+import unicodedata
+
 l = list()
 #for codeptx in range(0xE01EF):
 for codeptx in range(0x2F00):
@@ -7,7 +10,11 @@ for codeptx in range(0x2F00):
         n = unicodedata.name(c)
         cat = unicodedata.category(c)
         #if True: print('[{0:2}] {1:<60}{2:>4}'.format(cat, n, c))
-        obj = {'cpt': codeptx, 'c': c, 'n': n, 'cat': cat}
+        obj = collections.OrderedDict()
+        obj['cpt'] = codeptx
+        obj['n'] = n
+        obj['cat'] = cat
+        obj['c'] = c
         l.append(obj)
     except ValueError:
         pass
