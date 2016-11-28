@@ -3,8 +3,7 @@ import json
 import unicodedata
 
 l = list()
-#for codeptx in range(0xE01EF):
-for codeptx in range(0x2F00):
+for codeptx in range(0x20000):
     try:
         c = chr(codeptx)
         n = unicodedata.name(c)
